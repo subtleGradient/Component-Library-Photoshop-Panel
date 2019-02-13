@@ -1,0 +1,3 @@
+projectDirectory = "$CWD"
+windowTitle      = "$TM_DISPLAYNAME — Extension"
+include = "{$include,.debug}"

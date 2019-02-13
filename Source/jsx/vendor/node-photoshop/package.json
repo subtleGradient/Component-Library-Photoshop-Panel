@@ -1,0 +1,49 @@
+{
+  "name": "photoshop",
+  "version": "0.4.3",
+  "description": "Control Adobe Photoshop from Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap test/test-*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/subtleGradient/node-photoshop.git"
+  },
+  "keywords": [
+    "adobe",
+    "photoshop",
+    "graphics",
+    "layers",
+    "layout",
+    "image",
+    "filter",
+    "psd",
+    "png",
+    "pdf",
+    "stream",
+    "stream2"
+  ],
+  "dependencies": {
+    "lockfile": "~0.3",
+    "readable-stream": ""
+  },
+  "devDependencies": {
+    "tap": "",
+    "JSONStream": "",
+    "concat-stream": ""
+  },
+  "os": [
+    "darwin"
+  ],
+  "author": {
+    "name": "Thomas Aylott",
+    "email": "oblivious@subtlegradient.com"
+  },
+  "copyright": "2013 Facebook",
+  "license": "MIT",
+  "readme": "## ExtendScript\n\nAdobe Photoshop has an EcmaScript 3 compatible scripting engine.  \nIts variant of EcmaScript is called ExtendScript.  \nExtendScript files use the `jsx` file extension.  \nThe ExtendScript Toolkit.app will let you experiment with this code.  \nIt's installed at `/Applications/Utilities/Adobe Utilities-CC.localized/ExtendScript Toolkit CC/ExtendScript Toolkit.app`.\n\n### Here's some sample ExtendScript\n\n    function setColor_jsx(color){\n      app.foregroundColor.rgb.red = color.red\n      app.foregroundColor.rgb.green = color.green\n      app.foregroundColor.rgb.blue = color.blue\n      return app.foregroundColor.rgb.hexValue\n    }\n    \n    var color = {\n      red: Math.random() * 255,\n      green: Math.random() * 255,\n      blue: Math.random() * 255\n    }\n    \n    setColor_jsx(color)\n\n---\n\n# Photoshop scripting with Node.js\n\n## Install\n\n    npm install photoshop\n\n\n## `photoshop.createStream(jsx, [args])`\n\nThis is almost always what you want to use.\n\n`photoshop.createStream` creates a Node.js Stream.\nThe first argument to `createStream` is an ExtendScript `jsx` function to evaluate in Photoshop.\nThe `jsx` function will be called with an ExtendScript `Socket` instance and whatever additional arguments you supply as the second argument to `createStream`.\n\nWriting to the socket from Photoshop will immediately stream that string back to node.\n\n\n    function streamColorChanges_jsx(writeStream, setColor_jsx, color){\n      writeStream.write(setColor_jsx(color));\n      alert(\"Photoshop won't return until this window is closed, but the stream already sent its data!\");\n    }\n\n    var readStream = require('photoshop').createStream(streamColorChanges_jsx, [setColor_jsx, color]);\n\n    readStream.pipe(process.stdout);\n\n    readStream.on('end', function(){\n      console.log('Done!')\n    });\n\n\n\n## `photoshop.invoke(jsx, [args,] callback)`\n\nThe `invoke` method evaluates the given ExtendScript script in Adobe Photoshop.  \nIt handles serializing and deserializing the result of your script so **you can return pretty much anything**.  \nYou can even return Photoshop host objects and it'll do its best to not completely wet its pants.  \nIt includes `es5shim` and `JSON2` so you can **use normal JavaScript** like `Array map` in your ExtendScript.\n\n    function recentFilesThatExist_jsx(){\n      return app.recentFiles.map(File).filter(function(file){return file.exists})\n    }\n    require('photoshop').invoke(recentFilesThatExist_jsx, function(error, recentFiles){\n      console.log(recentFiles)\n    })\n\nThe `args` argument is optional.  \nYou can pass JSONable objects as arguments.\n\n    require('photoshop').invoke(setColor_jsx, [color], function(error, foregroundColor){\n      console.log('#' + foregroundColor)\n    })\n",
+  "readmeFilename": "README.md",
+  "_id": "photoshop@0.4.3",
+  "_from": "photoshop@"
+}

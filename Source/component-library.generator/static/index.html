@@ -1,0 +1,197 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>index</title>
+
+<script src="lib/bundle.js"></script>
+<script>
+function Prompt(title, defaultValue, callback){
+  var result = prompt(title, defaultValue);
+  if (result == null) return callback(Error('User cancelled'));
+  callback(null, result);
+}
+</script>
+<script>var model;</script>
+
+<body style="background-color:#555; color:white; font-family: Helvetica Neue; font-size:11px">
+
+<style>
+input:not([type=submit]),textarea{
+  background-color:#303030;
+  color:white;
+  border:0;
+  box-shadow:0 1px 0 #666;
+  border-radius: .5ex;
+}
+</style>
+
+<form id="TheForm"  onsubmit="
+document.getElementsByTagName('progress')[0].hidden = false;
+document.activeElement.blur();
+event.preventDefault();
+model.injectScreenshot(injectScreenshot_uri.value, {
+  layerName:injectScreenshot_layerName.value,
+  zoomFactor:+zoomFactor.value,
+  viewportSize:{
+    width:viewportSize_width.value,
+    height:viewportSize_height.value
+  }
+}, function(){
+  document.getElementsByTagName('progress')[0].hidden = true
+})
+">
+
+  <h3>Inject HTML Screenshot</h3>
+  
+  <label>Width&nbsp;<input id=viewportSize_width size=3></label>
+  <label>Height&nbsp;<input id=viewportSize_height size=3></label>
+  <label><input type=range min=0.1 max=3 step=0.1 id=zoomFactor value=1 onchange="nextElementSibling.textContent=value"><span>1</span></label>
+  
+  <br><label>Layer Name <input id="injectScreenshot_layerName" name="injectScreenshot_layerName" value="My Awesome Layer"></label>
+  <br><label>URI <input autofocus id="injectScreenshot_uri" name="injectScreenshot_uri" value="https://m.facebook.com" size="33"></label>
+  <br><input type=submit value="Inject!"> <progress hidden indeterminate></progress>
+</form>
+
+<textarea style="position:absolute; bottom:2em;left:0;right:0;top:13em;" oninput="injectScreenshot_uri.value='data:text/html,' + value"><div>Hello World</div></textarea>
+
+<!-- <label>Automatically export <input type=checkbox onchange="rpc.set(name, checked)" name="model.shouldAutoSaveJSON" data-bind="checked=model.shouldAutoSaveJSON"></label> -->
+
+<!-- <button onclick="model.executeFramerPS(function(error){
+  console.log('executeFramerPS', Array.prototype.slice.call(arguments))
+  top.Prompt('Exported JSON\n' + (error&&error.message||''), jsonFile)
+})">Run FramerPS 2</button> -->
+
+<!-- <input readonly data-bind="ao_data=model.executeFramerPS_progress;" style="width:100%" placeholder="Progress"> -->
+
+<!-- <textarea readonly data-bind="ao_data=model.currentDocument;" style="width:100%" onaodatachanged="console.warn('onaodatachanged',this,data)"></textarea> -->
+<!-- <b data-bind="ao_data=model.currentDocument.file;" onaodatachanged="textContent=JSON.stringify(data, null, 2)"></b> -->
+
+<!-- <div id=foo data-bind="ao_data=model.currentDocument;">
+  <input name="id" onupdate="ao_data=parentElement.ao_data[name]" onaodatachanged="value=data">
+  <input name="file" onupdate="ao_data=parentElement.ao_data[name]" onaodatachanged="value=data">
+</div> -->
+
+<script>
+
+ao_updateEventually.real = function(){
+  var elements = [].slice.call(document.querySelectorAll('[onupdate]'));
+  var tehCodez = elements.map(function(el, index){return 'with (this[' + index + ']){' + el.getAttribute('onupdate') + '}'});
+  var funk = Function(tehCodez.join('\n'))
+  console.log(funk)
+  funk.call(elements)
+}
+function ao_updateEventually(){
+  if (ao_updateEventually.LOCK){
+    ao_updateEventually.attemptsWhileLocked = (ao_updateEventually.attemptsWhileLocked||0) + 1;
+    return;
+  }
+  ao_updateEventually.LOCK = setTimeout(function(){
+    delete ao_updateEventually.LOCK;
+    ao_updateEventually.attemptsWhileLocked = 0;
+  },1000/30);
+  setTimeout(ao_updateEventually.real,0);
+}
+
+Object.defineProperty(Element.prototype, 'ao_data', {
+  get: function(){
+    return this._ao_data;
+  },
+  set: function(data){
+    this._ao_data = data;
+    ao_updateEventually();
+    
+    console.log('set ao_data', data, this)
+    var onaodatachanged = this.onaodatachanged || this.getAttribute('onaodatachanged');
+    if (!onaodatachanged) return;
+    if (typeof onaodatachanged == 'string') onaodatachanged = Function('data', 'oldData', 'try{with(this){' + onaodatachanged + '}}catch(e){setTimeout(function(){throw e},0)}');
+    this.onaodatachanged = onaodatachanged;
+    var oldData = this._ao_data;
+    this.onaodatachanged(data, oldData);
+  }
+})
+Object.defineProperty(HTMLTextAreaElement.prototype, 'ao_data', {
+  set: function(data){
+    this.value = JSON.stringify(data, null, 2);
+  }
+})
+</script>
+
+<!-- <button onclick="model.exportCurrentDocumentJSON(function(error, jsonFile){
+  console.log('exportCurrentDocumentJSON', Array.prototype.slice.call(arguments))
+  top.Prompt('Exported JSON\n' + (error&&error.message||''), jsonFile)
+})">Export JSON</button> -->
+
+<!-- <input readonly data-bind="value=model.currentDocument.jsonFile;" style="width:100%" placeholder="Path to JSON"> -->
+
+
+
+<!--
+<button onclick="model.exportToFramer()">Export to Framer</button>
+
+<input readonly data-bind="value=model.currentDocumentId;" >
+<input readonly data-bind="value=model.currentDocument.id;" >
+
+<input readonly data-bind="value=model.currentTool;" >
+layer count<input readonly data-bind="value=model.currentDocument.layers.length;" >
+change count<input readonly data-bind="value=model.currentDocument.changes.length;" >
+<textarea readonly data-bind="value=model.currentDocument.file;" ></textarea>
+
+<a data-bind="href=model.currentDocument.assetsFolderURI"><span data-bind="textContent=model.currentDocument.assetsFolder">…</span></a>
+-->
+
+
+<script>
+
+// document.body.style.opacity = 0
+
+requireService('/component-library.generator', function(error, rpc){
+  
+  if (error) throw error;
+  
+  window.rpc = rpc
+  model = rpc._object
+  
+  function Element$setBindings(binding){
+    var element = this
+    var keyValue = binding.split(/\s*=\s*/)
+    if (keyValue.length < 2) return;
+    var key = keyValue[0]
+    var path = keyValue[1].replace(/^model\./,'')
+    rpc.observe(path, function(newValue, oldValue, token){
+      if (element.parentNode == null) return rpc.clearObserver(token, function(){ element = null });
+      element[key] = newValue
+    })
+  }
+  function updateBindingsForElement(element){
+    element.getAttribute('data-bind').split(/\s*;\s*/).forEach(Element$setBindings, element)
+  }
+  function updateBindings(){
+    Array.prototype.slice.call(document.querySelectorAll('[data-bind]')).forEach(updateBindingsForElement)
+  }
+  
+  updateBindings()
+  
+  console.log(rpc)
+  console.log(model)
+  
+  function keepInSync(path, getObject){
+    rpc.observeMembers(path, function onChange(added, removed, changed){
+      var object = getObject();
+      Object.keys(added).forEach(function(id){
+        object[id] = added[id]
+      })
+      Object.keys(removed).forEach(function(id){
+        delete object[id]
+      })
+      Object.keys(changed).forEach(function(id){
+        object[id] = changed[id]
+      })
+      console.log(path, object)
+    })
+  }
+  
+  keepInSync('currentDocument', function(){return model.currentDocument || (model.currentDocument={})})
+  keepInSync('currentDocument.changes', function(){return (model.currentDocument || (model.currentDocument={})).changes || (model.currentDocument.changes=[])})
+  
+  // document.body.style.opacity = 1
+})
+</script>

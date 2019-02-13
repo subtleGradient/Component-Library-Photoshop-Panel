@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="4.0" ExtensionBundleId="com.subtlegradient.photoshop.component-library" ExtensionBundleVersion="1.0.0" ExtensionBundleName="Components">
+  
+  <ExtensionList>
+    <Extension Id="com.subtlegradient.photoshop.component-library" Version="1.0"/>
+  </ExtensionList>
+  
+  <ExecutionEnvironment>
+    <HostList>
+      <Host Name="PHXS" Version="[14.0,14.9]"/>
+      <Host Name="PHSP" Version="[14.0,14.9]"/>
+    </HostList>
+    <LocaleList>
+      <Locale Code="All"/>
+    </LocaleList>
+    <RequiredRuntimeList>
+      <RequiredRuntime Name="CSXS" Version="4.0"/>
+    </RequiredRuntimeList>
+  </ExecutionEnvironment>
+  
+  <DispatchInfoList>
+    <Extension Id="com.subtlegradient.photoshop.component-library">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/hostscript.jsx</ScriptPath>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Menu>Components</Menu>
+          <Geometry>
+            <Size> <Height>300</Height> <Width>300</Width> </Size>
+            <MaxSize> <Height/> <Width/> </MaxSize>
+            <MinSize> <Height/> <Width/> </MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+  </DispatchInfoList>
+  
+</ExtensionManifest>

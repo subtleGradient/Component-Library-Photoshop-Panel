@@ -1,0 +1,27 @@
+{
+  "name": "photoshop-generator-dnode-rpc",
+  "description": "dnode RPC interface to Photoshop Generator",
+  "version": "0.1.0",
+  "repository": {
+    "url": "git://github.com/subtleGradient/node-component-library.generator.git"
+  },
+  "generator-core-version": "~2",
+  "main": "main.js",
+  "scripts": {
+    "test": "tap test/*.js"
+  },
+  "dependencies": {
+    "dnode": "~1.0.5",
+    "shoe": "0.0.15",
+    "generator-core": "~1.0.0",
+    "node-phantom": "~0.2.3",
+    "phantomjs": "~1.9.2-2",
+    "ecstatic": "^0.5.1"
+  },
+  "devDependencies": {
+    "tap": "~0.2"
+  },
+  "author": "Thomas Aylott <oblivious@subtlegradient.com> (http://subtlegradient.com)",
+  "copyright": "2013 Facebook",
+  "license": "MIT"
+}

@@ -1,0 +1,57 @@
+﻿setGeneratorEnabled = function(generatorEnabled) {
+  var propRef = new ActionReference();
+  propRef.putProperty(charIDToTypeID("Prpr"), charIDToTypeID("PlgP"));
+  propRef.putEnumerated(charIDToTypeID("capp"), charIDToTypeID("Ordn"), charIDToTypeID("Trgt"));
+
+  var enabledDesc = new ActionDescriptor();
+  enabledDesc.putBoolean(stringIDToTypeID("generatorEnabled"), generatorEnabled);
+
+  var setDesc = new ActionDescriptor();
+  setDesc.putReference(charIDToTypeID("null"), propRef);
+  setDesc.putObject(charIDToTypeID("T   "), charIDToTypeID("PlgP"), enabledDesc);
+
+  return executeAction(charIDToTypeID("setd"), setDesc, DialogModes.NO);
+}
+
+installGeneratorPlugin = function(name, mainFilePath){
+  if (!Folder.appPackage.exists) throw Error("Can't find the appPackage");
+  var root = Folder.appPackage;
+  var stillNeedsToBeInstalledManuallyByTheUser = false;
+  if (root.getFiles('*.exe').length === 0) root = root.parent;
+  
+  var GeneratorPluginsFolder = Folder(root.fsName + '/Plug-ins/Generator')
+  GeneratorPluginsFolder.create()
+  if (!GeneratorPluginsFolder.exists){
+    stillNeedsToBeInstalledManuallyByTheUser = GeneratorPluginsFolder;
+    console.log(Error("Can't create the Generator plugins folder"));
+    GeneratorPluginsFolder = Folder.desktop
+  }
+  var targetFolder = Folder(GeneratorPluginsFolder.fsName + '/' + name)
+  targetFolder.create()
+  
+  var packagePath = File(targetFolder.fsName + '/package.json')
+  var mainPath = File(targetFolder.fsName + '/main.js')
+  if (packagePath.exists && mainPath.exists) return;
+  
+  var pkg = {
+    "name": name,
+    "version": "1.0.0",
+    "main": "main.js",
+    "generator-core-version": "~2"
+  }
+  
+  fs_writeFileSync(packagePath, JSON.stringify(pkg, null, 2))
+  fs_writeFileSync(mainPath, 'module.exports = exports = require(' + JSON.stringify(File(mainFilePath).fsName) + ');\n')
+  if (stillNeedsToBeInstalledManuallyByTheUser){
+    var README = File(mainPath.parent.fsName + '/README.txt');
+    fs_writeFileSync(README, 'To install, move this folder into "' + stillNeedsToBeInstalledManuallyByTheUser.fsName + '".\r You may need to create that folder if it doesn\'t exist.\r When you\'ve installed it, you\'ll need to activate Generator in Photoshop\'s Plug-Ins Preferences.\rIf Generator is already enabled, turn it off an on again so it will notice this new plugin.')
+    //README.parent.execute()
+    //README.execute()
+    alert("To complete the installation\rFollow the instructions here:\r" + README.fsName)
+    return 'requiresManualInstall';
+  }
+  return 'restartGenerator';
+}
+
+__filename = File(decodeURIComponent($.fileName)).fsName;
+__dirname = File(decodeURIComponent($.fileName)).parent.fsName;

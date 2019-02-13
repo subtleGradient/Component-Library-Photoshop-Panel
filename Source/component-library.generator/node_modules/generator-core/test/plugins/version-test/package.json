@@ -1,0 +1,12 @@
+{
+  "name": "generator-version-test",
+  "version": "0.0.1",
+  "generator-core-version": "123.456.789",
+  "description": "generator plugin to test core version dependency",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}

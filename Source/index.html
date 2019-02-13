@@ -1,0 +1,75 @@
+<!doctype html>
+<html style="background-color:#363636; color:white; font-family: Helvetica Neue; font-size:11px">
+<meta charset="utf-8">
+<title></title>
+<body>
+
+<script>
+// __adobe_cep__.showDevTools();
+</script>
+
+<script src="lib/invoke_jsx.cep.browser.js"></script>
+<script src="lib/polyfill.cep.browser.js"></script>
+<!-- <script src="lib/invoke_jsx.test.cep.browser.js"></script> -->
+<script src="component-library.generator/install/index.cep.browser.js"></script>
+<script>
+jsxInclude('./component-library.generator/install/install-generator-plugin.jsxinc')
+installGeneratorPlugin('component-library.generator', __dirname + '/component-library.generator/main.js', function(error){
+  if (error) console.error(error);
+  console.log('installGeneratorPlugin', arguments)
+})
+
+/*
+doIt.jsx = function(){
+  return fs_readFileSync('~/.component-library.generator.uri')
+}
+function doIt(){
+  var uri = 'http://localhost:49894?_=' + Date.now().toString(36)
+  console.log(uri);
+  document.getElementById('TheInput').textContent = uri;
+  document.getElementById('TheFrame').src = uri;
+}
+*/
+doIt.jsx = function(){
+  return fs_readFileSync('~/.component-library-rpc.uri')
+}
+function doIt(){
+  invoke(doIt.jsx, function(error, uri){
+    if (error) console.error(error);
+    console.log(uri);
+    document.getElementById('TheInput').textContent = uri;
+    document.getElementById('TheFrame').src = uri;
+  })
+}
+function tryAgainLater(){
+  setTimeout(doIt, 1000);
+}
+window.onload = doIt
+
+function restart(){
+  document.getElementById('TheInput').textContent = 'Restarting…';
+  document.getElementById('TheFrame').src = 'about:blank';
+  restartGenerator(function(){
+    setTimeout(function(){
+      location.reload()
+    }, 1000)
+  })
+}
+
+function Prompt(title, defaultValue, callback){
+  invoke(function jsx(title, defaultValue){
+    var result = prompt(title, defaultValue);
+    if (result == null) throw Error('User cancelled');
+    return result;
+  }, [title, defaultValue], callback)
+}
+
+
+</script>
+
+<iframe style="border:0;display:block;position:absolute;top:0;left:0;width:100%;height:100%;" id=TheFrame name=TheFrame src=about:blank onerror="tryAgainLater()"></iframe>
+
+<!-- <button onclick="doIt()">Load</button> -->
+<span onclick="Prompt(title, textContent)" title="Photoshop → Framer
+Paste this url in a browser" id=TheInput style="position:absolute; z-index:999; bottom:0; right:0"></span>
+<button style="opacity:0.25; position:absolute; z-index:999; bottom:0; left:0" onclick="restart()">Restart</button>
