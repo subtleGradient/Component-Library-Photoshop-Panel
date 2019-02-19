@@ -9,4 +9,7 @@ But it probably wouldn't be too hard to make it work if you're interested.
 
 I'm publishing this only because it's fun to look at wacky old stuff :D
 
+
+[![Boring Component-Library-Photoshop-Panel screencast](https://img.youtube.com/vi/ocl3Z_TsQD0/0.jpg)](https://youtu.be/ocl3Z_TsQD0?t=114)
+
 ![](Photoshop%20Components%20Panel%20screenshot.jpg "")
