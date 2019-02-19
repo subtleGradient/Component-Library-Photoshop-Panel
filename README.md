@@ -8,3 +8,5 @@ It probably won't work on Windows.
 But it probably wouldn't be too hard to make it work if you're interested.
 
 I'm publishing this only because it's fun to look at wacky old stuff :D
+
+![](Photoshop%20Components%20Panel%20screenshot.jpg "")
